@@ -9,6 +9,7 @@ use App\Models\SectionHero;
 use App\Models\SectionJourney;
 use App\Models\SectionJourneyItem;
 use App\Models\SectionService;
+use App\Models\SectionServiceItems;
 use App\Models\Setting;
 use App\Models\Upload;
 use Illuminate\Http\Request;
@@ -217,6 +218,66 @@ class ContentController extends Controller
             if (@$request->image_item[$i]) {
                 UploadImage($request->image_item[$i], SectionFeaturesItems::PATH_IMAGE, SectionFeaturesItems::class, $item->id, true, null, Upload::IMAGE);
             }
+        }
+
+        return response()->json([
+            'تم تحديث الإعدادات بنجاح'
+        ]);
+    }
+
+    public function getServicesSection()
+    {
+        $services= SectionService::query()->with('items')->first();
+
+        return view('admin.content.section_services', compact('services'));
+    }
+
+    public function postServicesSection(Request $request)
+    {
+
+        foreach (locales() as $key => $language) {
+            $rules['title_' . $key] = 'required|string|max:45';
+        }
+        $rules['image'] = 'nullable|image';
+
+        $request->validate($rules);
+
+        $data = [];
+        foreach (locales() as $key => $language) {
+            $data['title'][$key] = $request->get('title_' . $key);
+        }
+
+        $service = SectionService::query()->updateOrCreate(
+            ['id' => 1],   // مفتاح البحث
+            $data
+        );
+        if ($request->has('image')) {
+            UploadImage($request->image, SectionService::PATH_IMAGE, SectionService::class, $service->id, true, null, Upload::IMAGE);
+        }
+
+        $service->items()->delete();
+        $count = count($request->title_item_en);
+
+        for ($i = 0; $i < $count; $i++) {
+            $item=   SectionServiceItems::create([
+                'section_service_id' => 1,
+                'title' => [
+                    'en' => [$request->title_item_en[$i]],
+                    'ar' => [$request->title_item_ar[$i]],
+                ],
+                'details' => [
+                    'en' => [$request->details_item_en[$i]],
+                    'ar' => [$request->details_item_ar[$i]],
+                ],
+                  'button' => [
+                'en' => [$request->button_item_en[$i]],
+                'ar' => [$request->button_item_ar[$i]],
+            ]
+            ]);
+            if (@$request->image_item[$i]) {
+                UploadImage($request->image_item[$i], SectionFeaturesItems::PATH_IMAGE, SectionServiceItems::class, $item->id, true, null, Upload::IMAGE);
+            }
+
         }
 
         return response()->json([
