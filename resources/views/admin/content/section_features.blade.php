@@ -1,6 +1,6 @@
 @extends('admin.part.app')
 @section('title')
-    @lang('Section Our eatures')
+    @lang('Section Our Features')
 @endsection
 @section('styles')
     <style>

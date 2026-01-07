@@ -77,8 +77,8 @@
                                     class="menu-title text-truncate">@lang('Section Our Journey')</span>
                             </a>
                         </li>
-                        <li class="nav-item {{ request()->routeIs('content.service.index') ? 'active' : '' }} ">
-                            <a class="d-flex align-items-center" href="{{ route('content.service.index') }}">
+                        <li class="nav-item {{ request()->routeIs('content.getServicesSection') ? 'active' : '' }} ">
+                            <a class="d-flex align-items-center" href="{{ route('content.getServicesSection') }}">
                                 <i data-feather="file-text"></i><span
                                     class="menu-title text-truncate">@lang('Section Our Service')</span>
                             </a>

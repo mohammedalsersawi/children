@@ -92,9 +92,8 @@ Route::group(
                 Route::get('journey', [\App\Http\Controllers\Admin\Content\ContentController::class, 'getJourneySection'])->name('getJourneySection');
                 Route::post('journey', [\App\Http\Controllers\Admin\Content\ContentController::class, 'postJourneySection'])->name('postJourneySection');
 
-                Route::get('service', [\App\Http\Controllers\Admin\Content\ServiceController::class, 'index'])->name('service.index');
-                Route::post('service/update', [\App\Http\Controllers\Admin\Content\ServiceController::class, 'update'])->name('service.update');
-                Route::get('service/indexTable', [\App\Http\Controllers\Admin\Content\ServiceController::class, 'indexTable'])->name('service.indexTable');
+                Route::get('services', [\App\Http\Controllers\Admin\Content\ContentController::class, 'getServicesSection'])->name('getServicesSection');
+                Route::post('services', [\App\Http\Controllers\Admin\Content\ContentController::class, 'postServicesSection'])->name('postServicesSection');
 
 
                 Route::get('features', [\App\Http\Controllers\Admin\Content\ContentController::class, 'getFeaturesSection'])->name('getFeaturesSection');
