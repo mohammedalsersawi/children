@@ -39,7 +39,6 @@ Route::group(
                 Route::delete('/{uuid}', 'destroy')->name('delete');
                 Route::get('/indexTable', 'indexTable')->name('indexTable');
                 Route::put('/updateStatus/{status}/{uuid}', 'updateStatus')->name('updateStatus');
-
             });
 
             Route::middleware('permission:admin')->controller(\App\Http\Controllers\Admin\AdminController::class)->name('managers.')->prefix('managers')->group(function () {
@@ -60,14 +59,6 @@ Route::group(
                 Route::put('/updateStatus/{status}/{uuid}', 'updateStatus')->name('updateStatus');
             });
 
-            Route::middleware('permission:city')->controller(\App\Http\Controllers\Admin\Delivery\DeliveryController::class)->prefix('deliveries')->name('deliveries.')->group(function () {
-                Route::get('/', 'index')->name('index');
-                Route::post('/store', 'store')->name('store');
-                Route::post('/update', 'update')->name('update');
-                Route::delete('/{uuid}', 'destroy')->name('delete');
-                Route::get('/indexTable', 'indexTable')->name('indexTable');
-                Route::put('/updateStatus/{status}/{uuid}', 'updateStatus')->name('updateStatus');
-            });
             Route::middleware('permission:category')->controller(\App\Http\Controllers\Admin\Category\CategoryController::class)->prefix('categories')->name('categories.')->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::post('/store', 'store')->name('store');
@@ -98,9 +89,25 @@ Route::group(
 
                 Route::get('features', [\App\Http\Controllers\Admin\Content\ContentController::class, 'getFeaturesSection'])->name('getFeaturesSection');
                 Route::post('features', [\App\Http\Controllers\Admin\Content\ContentController::class, 'postFeaturesSection'])->name('postFeaturesSection');
+            });
 
+            Route::prefix('blog')
+            ->name('blog.')
+            ->group(function () {
+                Route::prefix('category')
+                    ->controller(\App\Http\Controllers\Admin\Blog\BlogCategoryController::class)
+                    ->group(function () {
+                        Route::get('/', 'index')->name('category.index');
+                        Route::post('/store', 'store')->name('category.store');
+                        Route::post('/update', 'update')->name('category.update');
+                        Route::delete('/{uuid}', 'destroy')->name('category.delete');
+                        Route::get('/indexTable', 'indexTable')->name('category.indexTable');
+                        Route::put('/updateStatus/{status}/{uuid}', 'updateStatus')->name('category.updateStatus');
+                    });
             });
         });
 
 
-    });
+
+    }
+);

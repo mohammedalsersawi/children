@@ -268,6 +268,35 @@ function fcmNotification($token, $id, $title, $content, $type, $reference_id, $r
     return $result;
 }
 
+function generateLocalizedSlugs(array $names, $separator = '-', $modelClass = null): array
+{
+    $slugs = [];
+
+    foreach ($names as $locale => $value) {
+        $slug = trim($value);
+        $slug = mb_strtolower($slug, 'UTF-8');
+        $slug = preg_replace('/[^\p{Arabic}a-zA-Z0-9\s\-]+/u', '', $slug);
+        $slug = preg_replace('/[\s\-]+/u', $separator, $slug);
+        $slug = trim($slug, $separator);
+
+        $originalSlug = $slug;
+        $counter = 1;
+
+        if ($modelClass) {
+            while (
+                $modelClass::where("slug->{$locale}", $slug)->exists()
+            ) {
+                $slug = $originalSlug . $separator . $counter;
+                $counter++;
+            }
+        }
+
+        $slugs[$locale] = $slug;
+    }
+
+    return $slugs;
+}
+
 //function notfication($receiver_uuid, $sender, $type = null, $msg = null, $name = null, $request = null)
 //{
 //    if ($msg) {
@@ -325,3 +354,7 @@ function fcmNotification($token, $id, $title, $content, $type, $reference_id, $r
 //}
 
 ?>
+
+
+
+

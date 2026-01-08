@@ -400,10 +400,10 @@
             return this.value;
         }).get();
     };
-    $('select').select2({
-        dir: '{{ LaravelLocalization::getCurrentLocaleDirection() }}',
-        placeholder: "@lang('select')",
-    });
+   // $('select').select2({
+     //   dir: '{{ LaravelLocalization::getCurrentLocaleDirection() }}',
+       // placeholder: "@lang('select')",
+    //});
 </script>
 
 @yield('scripts')
@@ -544,9 +544,6 @@
                 $('#full-modal-stem').modal('hide');
                 table.draw()
                 $('#add_model_form').trigger("reset");
-
-
-
 
                 $('#model-excel').modal('hide');
 

@@ -28,12 +28,12 @@ class CategoryController extends Controller
         }
         $rules['image'] = 'required|image';
 
-      $request->validate($rules);
+        $request->validate($rules);
 
         foreach (locales() as $key => $language) {
             $data['name'][$key] = $request->get('name_' . $key);
         }
-        $category= Category::create($data);
+        $category = Category::create($data);
         if ($request->has('image')) {
             UploadImage($request->image, Category::PATH_IMAGE, Category::class, $category->uuid, true, null, Upload::IMAGE);
         }
@@ -49,7 +49,7 @@ class CategoryController extends Controller
         foreach (locales() as $key => $language) {
             $rules['name_' . $key] = 'required|string|max:255';
         }
-      $request->validate($rules);
+        $request->validate($rules);
 
         foreach (locales() as $key => $language) {
             $data['name'][$key] = $request->get('name_' . $key);
@@ -59,31 +59,30 @@ class CategoryController extends Controller
         if ($request->has('image')) {
             UploadImage($request->image, Category::PATH_IMAGE, Category::class, $category->uuid, true, null, Upload::IMAGE);
         }
-//        $category->types()->sync($request->types);
+        //        $category->types()->sync($request->types);
         return response()->json([
             'item_edited'
         ]);
-
     }
 
     public function destroy($uuid)
     {
 
         try {
-            $uuids=explode(',', $uuid);
-            $Category=  Category::whereIn('uuid', $uuids)->get();
+            $uuids = explode(',', $uuid);
+            $Category =  Category::whereIn('uuid', $uuids)->get();
 
-            foreach ($Category as $item){
+            foreach ($Category as $item) {
                 Storage::delete('public/' . @$item->imageCategory->path);
 
-//                File::delete(public_path(Category::PATH_IMAGE.$item->imageCategory->filename));
+                //                File::delete(public_path(Category::PATH_IMAGE.$item->imageCategory->filename));
                 $item->imageCategory()->delete();
                 $item->delete();
             }
             return response()->json([
                 'item_deleted'
             ]);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'err'
             ]);
@@ -92,7 +91,7 @@ class CategoryController extends Controller
 
     public function indexTable(Request $request)
     {
-        $category= Category::query()->withoutGlobalScope('status')->orderByDesc('created_at');
+        $category = Category::query()->withoutGlobalScope('status')->orderByDesc('created_at');
 
         return Datatables::of($category)
             ->filter(function ($query) use ($request) {
@@ -104,12 +103,11 @@ class CategoryController extends Controller
                             $query->orWhere('name->' . $key, 'like', "%{$request->name}%");
                     }
                 }
-                if ($request->status){
-                    ($request->status==1)?$query->where('status',$request->status):$query->where('status',0);
+                if ($request->status) {
+                    ($request->status == 1) ? $query->where('status', $request->status) : $query->where('status', 0);
                 }
-
             })
-            ->addColumn('checkbox',function ($que){
+            ->addColumn('checkbox', function ($que) {
                 return $que->uuid;
             })
             ->addColumn('action', function ($que) {
@@ -121,55 +119,50 @@ class CategoryController extends Controller
                     $data_attr .= 'data-name_' . $key . '="' . $que->getTranslation('name', $key) . '" ';
                 }
                 $string = '';
-//                if ($user->can('competitions-edit')){
+                //                if ($user->can('competitions-edit')){
                 $string .= '<button class="edit_btn btn btn-sm btn-outline-primary btn_edit" data-toggle="modal"
                     data-target="#edit_modal" ' . $data_attr . '>' . __('edit') . '</button>';
-//                }
-//                if ($user->can('competitions-delete')){
+                //                }
+                //                if ($user->can('competitions-delete')){
                 $string .= ' <button type="button" class="btn btn-sm btn-outline-danger btn_delete" data-uuid="' . $que->uuid .
                     '">' . __('delete') . '</button>';
-//                }
+                //                }
                 return $string;
-            }) ->addColumn('status', function ($que)
-            {
+            })->addColumn('status', function ($que) {
                 $currentUrl = url('/');
-                if ($que->status==1){
-                    $data='
+                if ($que->status == 1) {
+                    $data = '
 <button type="button"  data-url="' . $currentUrl . "/admin/categories/updateStatus/0/" . $que->uuid . '" id="btn_update" class=" btn btn-sm btn-outline-success " data-uuid="' . $que->uuid .
                         '">' . __('active') . '</button>
                     ';
-                }else{
-                    $data='
+                } else {
+                    $data = '
 <button type="button"  data-url="' . $currentUrl . "/admin/categories/updateStatus/1/" . $que->uuid . '" id="btn_update" class=" btn btn-sm btn-outline-danger " data-uuid="' . $que->uuid .
                         '">' . __('inactive') . '</button>
                     ';
                 }
                 return $data;
             })
-//            ->addColumn('sub-category', function ($que) {
-//                $currentUrl = url('/');
-//                return '   <a class="btn btn-gradient-success " href="'.route('categories.sub',$que->uuid).'" type="button"                                                                                         ><span><i
-//                                                    class="fa fa-plus"></i>'.__('show').'</span>
-//                                        </button>';
-//            })
+            //            ->addColumn('sub-category', function ($que) {
+            //                $currentUrl = url('/');
+            //                return '   <a class="btn btn-gradient-success " href="'.route('categories.sub',$que->uuid).'" type="button"                                                                                         ><span><i
+            //                                                    class="fa fa-plus"></i>'.__('show').'</span>
+            //                                        </button>';
+            //            })
             ->rawColumns(['action', 'status'])->toJson();
     }
 
-    public function UpdateStatus($status,$sub)
+    public function UpdateStatus($status, $sub)
     {
-        $uuids=explode(',', $sub);
+        $uuids = explode(',', $sub);
 
         $activate =  Category::query()->withoutGlobalScope('status')
-            ->whereIn('uuid',$uuids)
+            ->whereIn('uuid', $uuids)
             ->update([
-                'status'=>$status
+                'status' => $status
             ]);
         return response()->json([
             'item_edited'
         ]);
     }
-
-
-
-
 }
